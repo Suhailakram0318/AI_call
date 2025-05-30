@@ -172,7 +172,7 @@ async def check_call_status(call_id: str):
                 repayment_raw = gemini_results.get("repayment_date")
                 if repayment_raw:
                     try:
-                        dt = dateutil.parser.parse(repayment_raw, fuzzy=True).replace(hour=16, minute=28)
+                        dt = dateutil.parser.parse(repayment_raw, fuzzy=True).replace(hour=9, minute=0)
                         print(f"📅 Parsed repayment date: {dt}")
                         scheduler.add_job(send_reminder_email, 'date', run_date=dt, args=[gemini_results["summary"], repayment_raw])
                         print(f"📧 Email scheduled for: {dt}")
