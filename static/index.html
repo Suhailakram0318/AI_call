@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Call Assistant - Aindriya Bank</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f4f6f8 0%, #e8ecef 100%);
+      margin: 0;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 12px 0 6px;
+    }
+    input[type="text"],
+    select,
+    input[type="file"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e1e8ed;
+      border-radius: 8px;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    button {
+      background: linear-gradient(135deg, #1e90ff 0%, #0d6efd 100%);
+      color: white;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-top: 0.5rem;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .divider {
+      margin: 3rem 0;
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #ddd, transparent);
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-top: -8px;
+      margin-bottom: 12px;
+      font-style: italic;
+      text-align: center;
+    }
+    .status-message {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      text-align: center;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .info    { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+
+    .spinner {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 1rem; }
+      .container { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📞 Call Assistant</h1>
+    <form id="single-form">
+      <div class="form-group">
+        <label for="name">Recipient Name</label>
+        <input type="text" id="name" placeholder="Enter full name" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input id="phone" type="tel" placeholder="Enter phone number" required>
+      </div>
+      <button type="submit">Initiate Call</button>
+    </form>
+    <div id="single-status" class="status-message info" style="display:none;"></div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>📂 Bulk Call via File Upload</h2>
+      <form id="upload-form">
+        <div class="form-group">
+          <label for="upload-file">Upload CSV or Excel File</label>
+          <input type="file" id="upload-file" accept=".csv,.xlsx,.xls" required>
+          <p class="note">Required columns: s.no, name, phone</p>
+        </div>
+        <button type="submit">Upload & Initiate Calls</button>
+      </form>
+    </div>
+    <div id="upload-status" class="status-message info" style="display:none;"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+  <script>
+    const phoneInput = document.querySelector("#phone");
+    const iti = window.intlTelInput(phoneInput, {
+      separateDialCode: true,
+      preferredCountries: ["in", "us", "gb", "ae", "ca", "au"],
+      initialCountry: "in",
+      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+    });
+
+    function showStatus(el, text, type) {
+      el.className = `status-message ${type}`;
+      el.innerHTML = text;
+      el.style.display = 'block';
+    }
+
+    document.getElementById("single-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const phone = iti.getNumber();
+      const statusEl = document.getElementById("single-status");
+
+      showStatus(statusEl, `<span class="spinner"></span> Initiating call to ${name}...`, 'info');
+
+      try {
+        const res = await fetch("/start-call/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, phone })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          let message = `✅ Call to ${name} completed.`;
+          if (data.email_scheduled) {
+            message += `<br/>📧 Reminder email scheduled.`;
+          }
+          showStatus(statusEl, message, 'success');
+        } else {
+          showStatus(statusEl, `❌ Error: ${data.error || 'Unknown error'}`, 'error');
+        }
+      } catch (err) {
+        showStatus(statusEl, `❌ Network error: ${err.message}`, 'error');
+      }
+    });
+
+    document.getElementById("upload-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const fileInput = document.getElementById("upload-file");
+      const file = fileInput.files[0];
+      const statusEl = document.getElementById("upload-status");
+
+      if (!file) return showStatus(statusEl, '❗ Please select a file first.', 'error');
+
+      showStatus(statusEl, `<span class="spinner"></span> Uploading and initiating calls...`, 'info');
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch("/upload-contacts/", {
+          method: "POST",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (res.ok) {
+          let msg = result.results.map(r =>
+            r.status === "completed"
+              ? `✅ ${r.name} - Call Completed`
+              : r.status === "rejected"
+              ? `❌ ${r.name} - User Rejected the Call`
+              : `⚠️ ${r.name} - Call Failed`
+          ).join("<br/>");
+
+          showStatus(statusEl, `📋 Bulk result:<br/>${msg}`, 'success');
+        } else {
+          showStatus(statusEl, `❌ Upload failed: ${result.error}`, 'error');
+        }
+      } catch (err) {
+        showStatus(statusEl, `❌ Network error: ${err.message}`, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+requests
+python-dotenv
+supabase
+transformers 
+torch 
+sentencepiece 
+nltk
+google-generativeai
+apscheduler
+fastapi
+uvicorn[standard]
+requests
+pandas
+python-multipart
+openpyxl
