@@ -173,12 +173,28 @@
         });
         const data = await res.json();
 
-        if (res.ok) {
-          let message = `✅ Call to ${name} completed.`;
-          if (data.email_scheduled) {
-            message += `<br/>📧 Reminder email scheduled.`;
-          }
-          showStatus(statusEl, message, 'success');
+        if (res.ok && data.call_id) {
+          const callId = data.call_id;
+          let retries = 0;
+          const maxRetries = 36;
+
+          const poll = async () => {
+            const statusRes = await fetch(`/call-status/${callId}`);
+            const statusData = await statusRes.json();
+
+            if (statusData.status === "completed") {
+              showStatus(statusEl, `✅ Call to ${name} completed.`, 'success');
+            } else if (statusData.status === "rejected") {
+              showStatus(statusEl, `❌ ${name} rejected the call.`, 'error');
+            } else if (retries >= maxRetries) {
+              showStatus(statusEl, `⚠️ Timeout: Unable to confirm call status.`, 'error');
+            } else {
+              retries++;
+              setTimeout(poll, 5000);
+            }
+          };
+
+          setTimeout(poll, 5000);
         } else {
           showStatus(statusEl, `❌ Error: ${data.error || 'Unknown error'}`, 'error');
         }
@@ -213,7 +229,7 @@
               ? `✅ ${r.name} - Call Completed`
               : r.status === "rejected"
               ? `❌ ${r.name} - User Rejected the Call`
-              : `⚠️ ${r.name} - Call Failed`
+              : `⚠️ ${r.name} - Call Initiated (Check back later)`
           ).join("<br/>");
 
           showStatus(statusEl, `📋 Bulk result:<br/>${msg}`, 'success');

@@ -106,6 +106,7 @@ def send_reminder_email(summary, repayment_date):
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.sendmail(SMTP_USER, EMAIL_RECIPIENT, msg.as_string())
+        print("✅ Reminder email sent to", EMAIL_RECIPIENT)
     except Exception as e:
         print("Email failed:", e)
 
@@ -132,43 +133,16 @@ def initiate_call(name: str, phone: str):
         "background_track": "office",
         "voicemail_action": "hangup",
         "task": """We're reaching out to remind you that your recent loan payment is currently overdue.
-                We’d like to confirm when you will be able to make the repayment. 
-                Could you please let us know your intended payment date, or if you’re facing any issues we should be aware of?""",
+                    We’d like to confirm when you will be able to make the repayment. 
+                    If you mention something like "today", "tomorrow", or "next week", 
+                    please also confirm the actual date (e.g., May 31st or June 2nd) so we can schedule your reminder accurately.
+                    Could you please let us know your intended payment date, or if you’re facing any issues we should be aware of?""",
         "first_sentence": f"Hello, this is Aindriya Bank calling. Am I speaking with {name}?"
     }
 
     response = requests.post('https://api.bland.ai/v1/calls', json=call_data, headers=headers)
     call_response = response.json()
-    call_id = call_response.get("call_id")
-    if not call_id:
-        return None
-
-    # Wait for call completion
-    poll_interval = 5
-    elapsed = 0
-    max_wait = 180
-    while elapsed < max_wait:
-        status = requests.get(f"https://api.bland.ai/v1/calls/{call_id}", headers=headers)
-        if status.status_code == 200:
-            details = status.json()
-            if details.get("status") == "completed":
-                transcript = details.get("concatenated_transcript", "")
-                gemini_results = analyze_transcript(transcript)
-                repayment_raw = gemini_results.get("repayment_date")
-                if repayment_raw:
-                    try:
-                        dt = dateutil.parser.parse(repayment_raw, fuzzy=True).replace(hour=9, minute=0)
-                        scheduler.add_job(send_reminder_email, 'date', run_date=dt, args=[gemini_results["summary"], repayment_raw])
-                        print("📧 Email scheduled.")
-                    except:
-                        pass
-                return {"status": "completed", "call_id": call_id}
-            elif details.get("status") in ["failed", "no_answered"]:
-                return {"status": "rejected", "call_id": call_id}
-        time.sleep(poll_interval)
-        elapsed += poll_interval
-
-    return {"status": "timeout", "call_id": call_id}
+    return call_response.get("call_id")
 
 # Routes
 @app.get("/", response_class=HTMLResponse)
@@ -180,13 +154,39 @@ async def index():
 async def start_call(data: dict):
     name = data.get("name")
     phone = normalize_phone(data.get("phone"))
-    result = initiate_call(name, phone)
-    if result and result["status"] == "completed":
-        return {"message": f"Call to {name} completed"}
-    elif result and result["status"] == "rejected":
-        return {"message": f"{name} rejected the call"}
-    else:
-        return {"message": f"{name} - Call Failed"}
+    call_id = initiate_call(name, phone)
+    if call_id:
+        return {"message": f"Initiated call to {name}", "call_id": call_id}
+    return {"error": "Call initiation failed"}
+
+@app.get("/call-status/{call_id}")
+async def check_call_status(call_id: str):
+    try:
+        status = requests.get(f"https://api.bland.ai/v1/calls/{call_id}", headers=headers)
+        if status.status_code == 200:
+            details = status.json()
+            current_status = details.get("status")
+            if current_status == "completed":
+                transcript = details.get("concatenated_transcript", "")
+                gemini_results = analyze_transcript(transcript)
+                repayment_raw = gemini_results.get("repayment_date")
+                if repayment_raw:
+                    try:
+                        dt = dateutil.parser.parse(repayment_raw, fuzzy=True).replace(hour=16, minute=28)
+                        print(f"📅 Parsed repayment date: {dt}")
+                        scheduler.add_job(send_reminder_email, 'date', run_date=dt, args=[gemini_results["summary"], repayment_raw])
+                        print(f"📧 Email scheduled for: {dt}")
+                    except:
+                        pass
+                return {"status": "completed"}
+            elif current_status in ["failed", "no_answered"]:
+                return {"status": "rejected"}
+            else:
+                return {"status": "initiating"}
+        else:
+            return {"status": "error"}
+    except:
+        return {"status": "error"}
 
 @app.post("/upload-contacts/")
 async def upload_contacts(file: UploadFile = File(...)):
@@ -206,12 +206,12 @@ async def upload_contacts(file: UploadFile = File(...)):
             phone = normalize_phone(str(row.get("phone", "")).strip())
             if not name or not phone:
                 continue
-            result = initiate_call(name, phone)
+            call_id = initiate_call(name, phone)
             results.append({
                 "name": name,
                 "phone": phone,
-                "status": result["status"] if result else "error",
-                "call_id": result["call_id"] if result else None
+                "status": "initiating" if call_id else "error",
+                "call_id": call_id
             })
             time.sleep(2)  # avoid rate limiting
 
