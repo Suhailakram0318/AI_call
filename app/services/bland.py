@@ -1,6 +1,9 @@
 import os
 import requests
 from app.utils import normalize_phone
+from dotenv import load_dotenv
+
+load_dotenv()
 
 headers = {'Authorization': f'Bearer {os.getenv("BLAND_API_KEY")}'}
 
