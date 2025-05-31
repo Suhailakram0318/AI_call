@@ -27,5 +27,3 @@ An AI-powered voice assistant platform that initiates automated calls to custome
 
 ---
 
-## 📁 Folder Structure
-
