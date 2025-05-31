@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ThreadPoolExecutor
 from email.mime.text import MIMEText
@@ -147,6 +148,12 @@ Let us know if you're facing any issues that might affect repayment.""",
     call_response = response.json()
     return call_response.get("call_id")
 
+class CallRequest(BaseModel):
+    name: str
+    phone: str
+    due_amount: str
+    due_date: str
+
 # Routes
 @app.get("/", response_class=HTMLResponse)
 async def index():
@@ -154,12 +161,12 @@ async def index():
         return f.read()
 
 @app.post("/start-call/")
-async def start_call(data: dict):
-    name = data.get("name")
-    phone = normalize_phone(data.get("phone"))
-    amount = data.get("amount")
-    due_date = data.get("due_date")
-    call_id = initiate_call(name, phone, amount, due_date)
+async def start_call(data: CallRequest):
+    name = data.name
+    phone = normalize_phone(data.phone)
+    due_amount = data.due_amount
+    due_date = data.due_date
+    call_id = initiate_call(name, phone, due_amount, due_date)
     if call_id:
         return {"message": f"Initiated call to {name}", "call_id": call_id}
     return {"error": "Call initiation failed"}

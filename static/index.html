@@ -184,7 +184,7 @@
         const res = await fetch("/start-call/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, phone, amount, due_date: dueDate })  // now includes new fields
+          body: JSON.stringify({ name, phone, due_amount: amount, due_date: dueDate })  // now includes new fields
         });
 
         const data = await res.json();
