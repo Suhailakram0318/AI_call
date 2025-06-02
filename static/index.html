@@ -1,263 +1,802 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Call Assistant - Aindriya Bank</title>
-  <link rel="icon" type="image/png" href="/static/logo.png" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f4f6f8 0%, #e8ecef 100%);
-      margin: 0;
-      padding: 2rem;
-      min-height: 100vh;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #ffffff;
-      padding: 2rem 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-    h1, h2 {
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 1.5rem;
-    }
-    label {
-      font-weight: 600;
-      display: block;
-      margin: 12px 0 6px;
-    }
-    input[type="text"],
-    input[type="tel"],
-    input[type="number"],
-    input[type="date"],
-    input[type="file"],
-    select {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid #e1e8ed;
-      border-radius: 8px;
-      margin-bottom: 1.2rem;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-    button {
-      background: linear-gradient(135deg, #1e90ff 0%, #0d6efd 100%);
-      color: white;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      margin-top: 0.5rem;
-    }
-    button:hover {
-      background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
-    }
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    .divider {
-      margin: 3rem 0;
-      border: none;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #ddd, transparent);
-    }
-    .note {
-      font-size: 0.85rem;
-      color: #6c757d;
-      margin-top: -8px;
-      margin-bottom: 12px;
-      font-style: italic;
-      text-align: center;
-    }
-    .status-message {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      text-align: center;
-      padding: 12px;
-      border-radius: 6px;
-    }
-    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    .info    { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Call Assistant - Aindriya Bank</title>
+    <link rel="icon" type="image/png" href="/static/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .spinner {
-      display: inline-block;
-      width: 1rem;
-      height: 1rem;
-      border: 2px solid rgba(0,0,0,0.2);
-      border-top-color: #007bff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
 
-    @media (max-width: 768px) {
-      body { padding: 1rem; }
-      .container { padding: 1.5rem; }
-    }
-  </style>
+        /* Header Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: white;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+            padding: 8px;
+        }
+
+        .logo svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            font-size: 1.125rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f3f4f6;
+            color: #374151;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .badge svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            fill: #2563eb;
+        }
+
+        .card-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .label svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .input {
+            width: 100%;
+            height: 2.75rem;
+            padding: 0 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .phone-input-container {
+            display: flex;
+        }
+
+        .country-code {
+            display: flex;
+            align-items: center;
+            padding: 0 0.75rem;
+            background: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-right: none;
+            border-radius: 0.5rem 0 0 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .phone-input {
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        /* Button Styles */
+        .btn {
+            width: 100%;
+            height: 2.75rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* File Upload Styles */
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #2563eb;
+        }
+
+        .file-upload-area svg {
+            width: 32px;
+            height: 32px;
+            fill: #9ca3af;
+            margin: 0 auto 0.5rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .file-label:hover {
+            color: #2563eb;
+        }
+
+        .file-info {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+
+        /* Requirements Box */
+        .requirements {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .requirements h4 {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        /* Alert Styles */
+        .alert {
+            display: none;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            border: 1px solid;
+        }
+
+        .alert.show {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .alert svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        .alert.success {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        .alert.error {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .alert.info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        /* Features Section */
+        .features {
+            margin-top: 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .feature {
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .feature-icon.blue {
+            background: #dbeafe;
+        }
+
+        .feature-icon.green {
+            background: #dcfce7;
+        }
+
+        .feature-icon.purple {
+            background: #f3e8ff;
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .feature-icon.blue svg {
+            fill: #2563eb;
+        }
+
+        .feature-icon.green svg {
+            fill: #16a34a;
+        }
+
+        .feature-icon.purple svg {
+            fill: #9333ea;
+        }
+
+        .feature h3 {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Spinner Animation */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                padding: 1rem 0;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card-header,
+            .card-content {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <img src="/static/aindriya_logo.png" alt="Aindriya Logo" style="display:block; max-width:80px; margin: 0 auto 1rem; border-radius: 8px;">
-    <h1>📞 AI Call Assistant</h1>
-    <form id="single-form">
-      <div class="form-group">
-        <div class="form-group">
-          <label for="name">Recipient Name</label>
-          <input type="text" id="name" placeholder="Enter full name" required>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">
+                  <img src="/static/aindriya_logo.png" alt="Aindriya Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 0.5rem;">
+                </div>
+            </div>
+            <h1>Aindriya Collection Bot</h1>
+            <p class="subtitle">Aindriya Bank</p>
+            <div class="badge">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                </svg>
+                Automated Debt Collection
+            </div>
         </div>
-        
-        <div class="form-group">
-          <label for="due-amount">Due Amount (₹)</label>
-          <input type="number" id="due-amount" placeholder="e.g. 1500" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="due-date">Due Date</label>
-          <input type="date" id="due-date" required>
-      </div>
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input id="phone" type="tel" placeholder="Enter phone number" required>
-      </div>
-      <button type="submit">Initiate Call</button>
-    </form>
-    <div id="single-status" class="status-message info" style="display:none;"></div>
 
-    <hr class="divider">
+        <!-- Main Grid -->
+        <div class="grid">
+            <!-- Single Call Form -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                        </svg>
+                        Individual Call
+                    </div>
+                    <div class="card-description">Initiate a single AI-powered debt collection call</div>
+                </div>
+                <div class="card-content">
+                    <form id="single-form">
+                        <div class="form-group">
+                            <label class="label" for="name">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                                Recipient Name
+                            </label>
+                            <input type="text" id="name" class="input" placeholder="Enter full name" required>
+                        </div>
 
-    <div class="section">
-      <h2>📂 Bulk Call via File Upload</h2>
-      <form id="upload-form">
-        <div class="form-group">
-          <label for="upload-file">Upload CSV or Excel File</label>
-          <input type="file" id="upload-file" accept=".csv,.xlsx,.xls" required>
-          <p class="note">Required columns: s.no, name, phone, due_amount, due_date</p>
+                        <div class="form-group">
+                            <label class="label" for="due-amount">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                                </svg>
+                                Due Amount (₹)
+                            </label>
+                            <input type="number" id="due-amount" class="input" placeholder="e.g. 1500" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label" for="due-date">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                </svg>
+                                Due Date
+                            </label>
+                            <input type="date" id="due-date" class="input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label" for="phone">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                                </svg>
+                                Phone Number
+                            </label>
+                            <div class="phone-input-container">
+                                <div class="country-code">🇮🇳 +91</div>
+                                <input type="tel" id="phone" class="input phone-input" placeholder="Enter phone number" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn" id="single-call-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                            </svg>
+                            Initiate Call
+                        </button>
+                    </form>
+
+                    <div id="single-status" class="alert"></div>
+                </div>
+            </div>
+
+            <!-- Bulk Upload Form -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Bulk Call Upload
+                    </div>
+                    <div class="card-description">Upload a CSV or Excel file to initiate multiple calls</div>
+                </div>
+                <div class="card-content">
+                    <form id="upload-form">
+                        <div class="form-group">
+                            <label class="label" for="upload-file">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                                Upload File
+                            </label>
+                            <div class="file-upload-area" onclick="document.getElementById('upload-file').click()">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                                <div class="file-label">Click to upload or drag and drop</div>
+                                <div class="file-info">CSV, XLSX, XLS files only</div>
+                            </div>
+                            <input type="file" id="upload-file" class="file-input" accept=".csv,.xlsx,.xls" required>
+                        </div>
+
+                        <div class="requirements">
+                            <h4>Required Columns:</h4>
+                            <div class="requirements-grid">
+                                <div>• s.no</div>
+                                <div>• name</div>
+                                <div>• phone</div>
+                                <div>• due_amount</div>
+                                <div>• due_date</div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn" id="bulk-call-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Upload & Initiate Calls
+                        </button>
+                    </form>
+
+                    <div id="upload-status" class="alert"></div>
+                </div>
+            </div>
         </div>
-        <button type="submit">Upload & Initiate Calls</button>
-      </form>
+
+        <!-- Features Section -->
+        <div class="card features">
+            <div class="card-header">
+                <div class="card-title" style="justify-content: center;">Key Features</div>
+            </div>
+            <div class="card-content">
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-icon blue">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                            </svg>
+                        </div>
+                        <h3>AI-Powered Calls</h3>
+                        <p>Intelligent conversation handling with natural language processing</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon green">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <h3>Real-time Status</h3>
+                        <p>Live updates on call progress and completion status</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon purple">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                        </div>
+                        <h3>Bulk Processing</h3>
+                        <p>Handle multiple calls efficiently with file upload support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="upload-status" class="status-message info" style="display:none;"></div>
-  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
-  <script>
-    const phoneInput = document.querySelector("#phone");
-    const iti = window.intlTelInput(phoneInput, {
-      separateDialCode: true,
-      preferredCountries: ["in", "us", "gb", "ae", "ca", "au"],
-      initialCountry: "in",
-      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
-    });
-
-    function showStatus(el, text, type) {
-      el.className = `status-message ${type}`;
-      el.innerHTML = text;
-      el.style.display = 'block';
-    }
-
-    document.getElementById("single-form").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const name = document.getElementById("name").value.trim();
-      const phone = iti.getNumber();
-      const amount = document.getElementById("due-amount").value.trim();
-      const dueDate = document.getElementById("due-date").value;
-      const statusEl = document.getElementById("single-status");
-
-      showStatus(statusEl, `<span class="spinner"></span> Initiating call to ${name}...`, 'info');
-
-      try {
-        const res = await fetch("/start-call/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, phone, due_amount: amount, due_date: dueDate })  // now includes new fields
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+    <script>
+        // Initialize international telephone input
+        const phoneInput = document.querySelector("#phone");
+        const iti = window.intlTelInput(phoneInput, {
+            separateDialCode: true,
+            preferredCountries: ["in", "us", "gb", "ae", "ca", "au"],
+            initialCountry: "in",
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
         });
 
-        const data = await res.json();
-
-        if (res.ok && data.call_id) {
-          const callId = data.call_id;
-          let retries = 0;
-          const maxRetries = 36;
-
-          const poll = async () => {
-            const statusRes = await fetch(`/call-status/${callId}`);
-            const statusData = await statusRes.json();
-
-            if (statusData.status === "completed") {
-              showStatus(statusEl, `✅ Call to ${name} completed.`, 'success');
-            } else if (statusData.status === "rejected") {
-              showStatus(statusEl, `❌ ${name} rejected the call.`, 'error');
-            } else if (retries >= maxRetries) {
-              showStatus(statusEl, `⚠️ Timeout: Unable to confirm call status.`, 'error');
-            } else {
-              retries++;
-              setTimeout(poll, 5000);
+        // Utility function to show status messages
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `alert ${type} show`;
+            
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+                    break;
+                case 'error':
+                    icon = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>';
+                    break;
+                case 'info':
+                    icon = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>';
+                    break;
             }
-          };
-
-          setTimeout(poll, 5000);
-        } else {
-          showStatus(statusEl, `❌ Error: ${data.error || 'Unknown error'}`, 'error');
+            
+            element.innerHTML = icon + '<span>' + message + '</span>';
         }
-      } catch (err) {
-        showStatus(statusEl, `❌ Network error: ${err.message}`, 'error');
-      }
-    });
 
-    document.getElementById("upload-form").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const fileInput = document.getElementById("upload-file");
-      const file = fileInput.files[0];
-      const statusEl = document.getElementById("upload-status");
+        // Update button loading state
+        function setButtonLoading(buttonId, loading, loadingText, normalText) {
+            const button = document.getElementById(buttonId);
+            if (loading) {
+                button.disabled = true;
+                button.innerHTML = '<div class="spinner"></div>' + loadingText;
+            } else {
+                button.disabled = false;
+                button.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>' + normalText;
+            }
+        }
 
-      if (!file) return showStatus(statusEl, '❗ Please select a file first.', 'error');
+        // Single call form handler
+        document.getElementById("single-form").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById("name").value.trim();
+            const phone = iti.getNumber();
+            const amount = document.getElementById("due-amount").value.trim();
+            const dueDate = document.getElementById("due-date").value;
 
-      showStatus(statusEl, `<span class="spinner"></span> Uploading and initiating calls...`, 'info');
+            setButtonLoading('single-call-btn', true, 'Initiating Call...', 'Initiate Call');
+            showStatus('single-status', `Initiating call to ${name}...`, 'info');
 
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
+            try {
+                const res = await fetch("/start-call/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        name, 
+                        phone, 
+                        due_amount: amount, 
+                        due_date: dueDate 
+                    })
+                });
 
-        const res = await fetch("/upload-contacts/", {
-          method: "POST",
-          body: formData
+                const data = await res.json();
+
+                if (res.ok && data.call_id) {
+                    const callId = data.call_id;
+                    let retries = 0;
+                    const maxRetries = 36;
+
+                    const poll = async () => {
+                        try {
+                            const statusRes = await fetch(`/call-status/${callId}`);
+                            const statusData = await statusRes.json();
+
+                            if (statusData.status === "completed") {
+                                showStatus('single-status', `✅ Call to ${name} completed successfully.`, 'success');
+                                setButtonLoading('single-call-btn', false, '', 'Initiate Call');
+                            } else if (statusData.status === "rejected") {
+                                showStatus('single-status', `❌ ${name} rejected the call.`, 'error');
+                                setButtonLoading('single-call-btn', false, '', 'Initiate Call');
+                            } else if (retries >= maxRetries) {
+                                showStatus('single-status', `⚠️ Timeout: Unable to confirm call status.`, 'error');
+                                setButtonLoading('single-call-btn', false, '', 'Initiate Call');
+                            } else {
+                                retries++;
+                                setTimeout(poll, 5000);
+                            }
+                        } catch (err) {
+                            showStatus('single-status', `❌ Error checking call status: ${err.message}`, 'error');
+                            setButtonLoading('single-call-btn', false, '', 'Initiate Call');
+                        }
+                    };
+
+                    setTimeout(poll, 5000);
+                } else {
+                    showStatus('single-status', `❌ Error: ${data.error || 'Unknown error'}`, 'error');
+                    setButtonLoading('single-call-btn', false, '', 'Initiate Call');
+                }
+            } catch (err) {
+                showStatus('single-status', `❌ Network error: ${err.message}`, 'error');
+                setButtonLoading('single-call-btn', false, '', 'Initiate Call');
+            }
         });
-        const result = await res.json();
 
-        if (res.ok) {
-          let msg = result.results.map(r =>
-            r.status === "completed"
-              ? `✅ ${r.name} - Call Completed`
-              : r.status === "rejected"
-              ? `❌ ${r.name} - User Rejected the Call`
-              : `⚠️ ${r.name} - Call Initiated (Check back later)`
-          ).join("<br/>");
+        // Bulk upload form handler
+        document.getElementById("upload-form").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById("upload-file");
+            const file = fileInput.files[0];
 
-          showStatus(statusEl, `📋 Bulk result:<br/>${msg}`, 'success');
-        } else {
-          showStatus(statusEl, `❌ Upload failed: ${result.error}`, 'error');
-        }
-      } catch (err) {
-        showStatus(statusEl, `❌ Network error: ${err.message}`, 'error');
-      }
-    });
-  </script>
+            if (!file) {
+                showStatus('upload-status', '❗ Please select a file first.', 'error');
+                return;
+            }
+
+            setButtonLoading('bulk-call-btn', true, 'Processing...', 'Upload & Initiate Calls');
+            showStatus('upload-status', 'Uploading and initiating calls...', 'info');
+
+            try {
+                const formData = new FormData();
+                formData.append("file", file);
+
+                const res = await fetch("/upload-contacts/", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const result = await res.json();
+
+                if (res.ok) {
+                    let msg = result.results.map(r =>
+                        r.status === "completed"
+                            ? `✅ ${r.name} - Call Completed`
+                            : r.status === "rejected"
+                            ? `❌ ${r.name} - User Rejected the Call`
+                            : `⚠️ ${r.name} - Call Initiated (Check back later)`
+                    ).join("<br/>");
+
+                    showStatus('upload-status', `📋 Bulk result:<br/>${msg}`, 'success');
+                } else {
+                    showStatus('upload-status', `❌ Upload failed: ${result.error}`, 'error');
+                }
+            } catch (err) {
+                showStatus('upload-status', `❌ Network error: ${err.message}`, 'error');
+            } finally {
+                setButtonLoading('bulk-call-btn', false, '', 'Upload & Initiate Calls');
+            }
+        });
+
+        // File upload area click handler
+        document.querySelector('.file-upload-area').addEventListener('click', function() {
+            document.getElementById('upload-file').click();
+        });
+
+        // File input change handler to show selected file
+        document.getElementById('upload-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const fileLabel = document.querySelector('.file-label');
+            if (file) {
+                fileLabel.textContent = `Selected: ${file.name}`;
+            } else {
+                fileLabel.textContent = 'Click to upload or drag and drop';
+            }
+        });
+    </script>
 </body>
 </html>
