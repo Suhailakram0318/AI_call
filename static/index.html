@@ -783,6 +783,7 @@
 
         // File upload area click handler
         document.querySelector('.file-upload-area').addEventListener('click', function() {
+            formData.append("file", file);
             document.getElementById('upload-file').click();
         });
 
