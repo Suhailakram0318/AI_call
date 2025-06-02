@@ -32,6 +32,11 @@
             margin-bottom: 3rem;
         }
 
+        .file-upload-area.uploaded {
+        border-color: #2563eb;
+        background-color: #f0f7ff;
+        }
+
         .logo-container {
             display: flex;
             justify-content: center;
@@ -778,6 +783,7 @@
                 showStatus('upload-status', `❌ Network error: ${err.message}`, 'error');
             } finally {
                 setButtonLoading('bulk-call-btn', false, '', 'Upload & Initiate Calls');
+                document.querySelector('.file-upload-area').classList.remove("uploaded");
             }
         });
 
@@ -791,10 +797,13 @@
         document.getElementById('upload-file').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const fileLabel = document.querySelector('.file-label');
+            const fileUploadArea = document.querySelector('.file-upload-area');
             if (file) {
                 fileLabel.textContent = `Selected: ${file.name}`;
+                fileUploadArea.classList.add("uploaded");  // 👈 highlight it
             } else {
                 fileLabel.textContent = 'Click to upload or drag and drop';
+                fileUploadArea.classList.remove("uploaded");  // 👈 remove highlight
             }
         });
     </script>
