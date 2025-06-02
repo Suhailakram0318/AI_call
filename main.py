@@ -226,11 +226,11 @@ async def upload_contacts(file: UploadFile = File(...)):
         for _, row in df.iterrows():
             name = str(row.get("name", "")).strip()
             phone = normalize_phone(str(row.get("phone", "")).strip())
-            amount = str(row.get("amount", "")).strip()
+            due_amount = str(row.get("due_amount", "")).strip()
             due_date = str(row.get("due_date", "")).strip()
-            if not name or not phone or not amount or not due_date:
+            if not name or not phone or not due_amount or not due_date:
                 continue
-            call_id = initiate_call(name, phone, amount, due_date)
+            call_id = initiate_call(name, phone, due_amount, due_date)
             results.append({
                 "name": name,
                 "phone": phone,
