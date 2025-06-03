@@ -13,3 +13,4 @@ requests
 pandas
 python-multipart
 openpyxl
+inflect
