@@ -34,7 +34,7 @@ async def index():
 
 @app.post("/start-call/")
 async def start_call(data: CallRequest):
-    call_id = initiate_call(data.name, normalize_phone(data.phone), data.bank_name, data.due_amount, data.due_date)
+    call_id = initiate_call(data.name, normalize_phone(data.phone), data.bank_name, data.tone, data.due_amount, data.due_date)
     if call_id:
         return {"message": f"Initiated call to {data.name}", "call_id": call_id}
     return {"error": "Call initiation failed"}
@@ -71,11 +71,12 @@ async def upload_contacts(file: UploadFile = File(...)):
         name = str(row.get("name", "")).strip()
         phone = normalize_phone(str(row.get("phone", "")).strip())
         bank_name = str(row.get("bank_name", "")).strip()
+        tone = str(row.get("tone", "")).strip()
         due_amount = str(row.get("due_amount", "")).strip()
         due_date = str(row.get("due_date", "")).strip()
-        if not name or not phone or not due_amount or not due_date:
+        if not name or not phone or not bank_name or not tone or not due_amount or not due_date:
             continue
-        call_id = initiate_call(name, phone, bank_name, due_amount, due_date)
+        call_id = initiate_call(name, phone, bank_name, tone, due_amount, due_date)
         results.append({
             "name": name,
             "phone": phone,

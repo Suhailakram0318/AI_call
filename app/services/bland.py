@@ -1,4 +1,5 @@
 import os
+import logging
 import requests
 import inflect
 from datetime import datetime
@@ -7,21 +8,33 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+logging.basicConfig(level=logging.INFO)
+
 headers = {'Authorization': f'Bearer {os.getenv("BLAND_API_KEY")}'}
 
 # Utility to convert number to readable words (e.g., 2000 -> two thousand)
 p = inflect.engine()
 
-def initiate_call(name: str, phone: str, bank_name: str, due_amount: str, due_date: str):
+def initiate_call(name: str, phone: str, bank_name: str, tone: str, due_amount: str, due_date: str):
     phone = normalize_phone(phone)
 
     # Assuming due_amount and due_date are strings
     formatted_amount = format_amount_readable(due_amount) + " rupees"
     formatted_due_date = format_date_readable(due_date)
 
+    #Mapping the tone
+    tone_map = {
+    "soft": "soft and polite",
+    "neutral": "neutral and professional",
+    "firm": "firm and direct",
+    "assertive": "assertive and insistent",
+    "harsh": "harsh and demanding"
+}
+    tone_style = tone_map.get(tone, "neutral and professional")
+
     payload = {
         "phone_number": phone,
-        "voice": "Shashi Tharoor",
+        "voice": "june",
         "wait_for_greeting": False,
         "record": True,
         "answered_by_enabled": True,
@@ -35,6 +48,8 @@ def initiate_call(name: str, phone: str, bank_name: str, due_amount: str, due_da
         "voicemail_action": "hangup",
         "task": f"""
 Goal: Call customers to remind them of their overdue loan payment. Confirm when they can make the payment, assess their willingness and financial condition, and warn about consequences if they refuse or delay.
+
+Your speaking style should be {tone_style}. Be consistent with this tone throughout the conversation.
 
 Call Flow:
 
@@ -51,7 +66,7 @@ Call Flow:
         - Warn that legal action may be initiated.
         - Inform that their CIBIL score will be negatively affected.
         - State that recovery agents may be sent to their registered address.
-    - Be firm and persistent. Do not accept vague answers.
+    - Be {tone_style}. Do not accept vague answers.
     - Repeat the urgency and consequences until a concrete response is received.
     - End the call by summarizing the discussed repayment date and thanking them.
 
@@ -68,6 +83,9 @@ I am an AI assistant created by {bank_name} to follow up on overdue loan repayme
         "first_sentence": f"Hello, this is {bank_name} calling. Am I speaking with {name}?"
     }
     response = requests.post("https://api.bland.ai/v1/calls", json=payload, headers=headers)
+    if response.status_code != 200:
+        logging.error(f"Call initiation failed: {response.status_code}, {response.text}")
+        return None
     return response.json().get("call_id")
 
 def format_amount_readable(amount):
@@ -89,6 +107,8 @@ def check_bland_call_status(call_id: str):
         if response.status_code == 200:
             data = response.json()
             return data.get("status"), data.get("concatenated_transcript", "")
+        logging.error(f"Failed to fetch status: {response.status_code}, {response.text}")
         return "error", ""
     except:
+        logging.exception("Exception while checking call status")
         return "error", ""
