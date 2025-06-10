@@ -12,7 +12,7 @@ headers = {'Authorization': f'Bearer {os.getenv("BLAND_API_KEY")}'}
 # Utility to convert number to readable words (e.g., 2000 -> two thousand)
 p = inflect.engine()
 
-def initiate_call(name: str, phone: str, due_amount: str, due_date: str):
+def initiate_call(name: str, phone: str, bank_name: str, due_amount: str, due_date: str):
     phone = normalize_phone(phone)
 
     # Assuming due_amount and due_date are strings
@@ -40,7 +40,7 @@ Call Flow:
 
 1. Greet the person and ask, "Am I speaking with {name}?"
 2. If the person says **yes**:
-    - Introduce yourself as an assistant from Aindriya Bank.
+    - Introduce yourself as an assistant from {bank_name}.
     - Inform them that their recent loan payment of {formatted_amount} was due on {formatted_due_date} and is currently overdue.
     - Ask when they will be able to make the payment.
     - If they give vague responses, excuses, or delay:
@@ -63,9 +63,9 @@ Call Flow:
 
 Background:
 
-I am an AI assistant created by Aindriya Bank to follow up on overdue loan repayments. Ensuring timely recovery protects the customer's credit history and supports the bank’s financial operations. This call is a formal reminder and may lead to further action in case of continued non-compliance.
+I am an AI assistant created by {bank_name} to follow up on overdue loan repayments. Ensuring timely recovery protects the customer's credit history and supports the bank’s financial operations. This call is a formal reminder and may lead to further action in case of continued non-compliance.
 """,
-        "first_sentence": f"Hello, this is Aindriya Bank calling. Am I speaking with {name}?"
+        "first_sentence": f"Hello, this is {bank_name} calling. Am I speaking with {name}?"
     }
     response = requests.post("https://api.bland.ai/v1/calls", json=payload, headers=headers)
     return response.json().get("call_id")
