@@ -34,7 +34,7 @@ def initiate_call(name: str, phone: str, bank_name: str, tone: str, due_amount: 
 
     payload = {
         "phone_number": phone,
-        "voice": "june",
+        "voice": "Shashi",
         "wait_for_greeting": False,
         "record": True,
         "answered_by_enabled": True,
