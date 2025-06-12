@@ -109,15 +109,12 @@ def get_voice_id(voice: str):
         "keelan": "keelan",
         "maya": "maya",
         "ruth": "ruth",
-        "sarah": "sarah",
         
         # Bland AI Male voices
-        "matt": "matt",
         "brady": "brady",
         "karl": "karl",
         "mason": "mason",
-        "public - hank (boss)": "public - hank (boss)",
-        "walter-1": "walter-1"
+        "public - hank (boss)": "public - hank (boss)"
     }
     
     # Return the mapped voice or default to the custom voice
