@@ -15,7 +15,7 @@ headers = {'Authorization': f'Bearer {os.getenv("BLAND_API_KEY")}'}
 # Utility to convert number to readable words (e.g., 2000 -> two thousand)
 p = inflect.engine()
 
-def initiate_call(name: str, phone: str, bank_name: str, tone: str, due_amount: str, due_date: str):
+def initiate_call(name: str, phone: str, bank_name: str, voice:str, tone: str, due_amount: str, due_date: str):
     phone = normalize_phone(phone)
 
     # Assuming due_amount and due_date are strings
@@ -32,9 +32,12 @@ def initiate_call(name: str, phone: str, bank_name: str, tone: str, due_amount: 
 }
     tone_style = tone_map.get(tone, "neutral and professional")
 
+    # Voice mapping - handle custom voice vs standard voices
+    voice_id = get_voice_id(voice)
+
     payload = {
         "phone_number": phone,
-        "voice": "Shashi",
+        "voice": voice_id,
         "wait_for_greeting": False,
         "record": True,
         "answered_by_enabled": True,
@@ -87,6 +90,38 @@ I am an AI assistant created by {bank_name} to follow up on overdue loan repayme
         logging.error(f"Call initiation failed: {response.status_code}, {response.text}")
         return None
     return response.json().get("call_id")
+
+def get_voice_id(voice: str):
+    """
+    Map frontend voice selection to Bland AI voice IDs
+    Handle both custom voices and standard Bland AI voices
+    """
+    # Voice mapping dictionary
+    voice_mapping = {
+        # Custom voice
+        "shashi": "shashi",  # Your custom cloned voice ID
+        
+        # Bland AI Female voices
+        "adriana": "adriana",
+        "emily-british": "emily-british", 
+        "evelyn": "evelyn",
+        "june": "june",
+        "keelan": "keelan",
+        "maya": "maya",
+        "ruth": "ruth",
+        "sarah": "sarah",
+        
+        # Bland AI Male voices
+        "matt": "matt",
+        "brady": "brady",
+        "karl": "karl",
+        "mason": "mason",
+        "public - hank (boss)": "public - hank (boss)",
+        "walter-1": "walter-1"
+    }
+    
+    # Return the mapped voice or default to the custom voice
+    return voice_mapping.get(voice, "shashi")
 
 def format_amount_readable(amount):
     try:
