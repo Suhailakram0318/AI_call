@@ -103,10 +103,8 @@ def get_voice_id(voice: str):
         
         # Bland AI Female voices
         "adriana": "adriana",
-        "emily-british": "emily-british", 
         "evelyn": "evelyn",
         "june": "june",
-        "keelan": "keelan",
         "maya": "maya",
         "ruth": "ruth",
         
